@@ -3,13 +3,14 @@ const multer = require('multer');
 const fs = require('fs');
 const axios = require('axios');
 const cors = require('cors');
+const serverless = require('serverless-http');
+
 const app = express();
-const upload = multer({ dest: 'uploads/' });
+const upload = multer({ dest: '/tmp' }); // serverless safe temp folder
 
-app.use(cors()); // allow requests from any site
+app.use(cors());
 
-// 🛑 Replace with your actual GitHub token and repo
-const GITHUB_TOKEN = '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';
+const GITHUB_TOKEN = process.env.GITHUB_TOKEN;
 const REPO = 'xorax317/Quickhost';
 const BRANCH = 'main';
 
@@ -41,6 +42,5 @@ app.post('/upload', upload.single('file'), async (req, res) => {
   }
 });
 
-app.listen(3000, () => {
-  console.log('Server running on port 3000');
-});
+module.exports = app;
+module.exports.handler = serverless(app);
